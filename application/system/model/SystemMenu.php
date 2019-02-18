@@ -83,6 +83,7 @@ class SystemMenu extends Model
                     $map['menu_id'] = $data['id'];
                     $map['title'] = $title;
                     $map['lang'] = dblang('admin');
+                    $map['origin_id']=$data['origin_id'];
                     Db::name('admin_menu_lang')->insert($map);
                     
                 }
@@ -99,6 +100,7 @@ class SystemMenu extends Model
                 $map['menu_id'] = $res->id;
                 $map['title'] = $title;
                 $map['lang'] = dblang('admin');
+                $map['origin_id']=$data['origin_id'];
                 Db::name('admin_menu_lang')->insert($map);
             }
 
@@ -184,6 +186,7 @@ class SystemMenu extends Model
      */
     public static function getMainMenu($update = false, $pid = 0, $level = 0, $data = [])
     {
+
         $cache_tag = '_admin_menu'.ADMIN_ID.dblang('admin');
         $trees = [];
         
@@ -205,8 +208,8 @@ class SystemMenu extends Model
 
                 $data = self::where($map)
                         ->order('sort asc,id asc')
-                        ->column('id,pid,module,title,url,param,target,icon');
-                $data = array_values($data); 
+                        ->column('id,uid,pid,module,title,url,param,target,icon,origin_id');
+                $data = array_values($data);
             }
 
             foreach ($data as $k => $v) {
@@ -218,10 +221,18 @@ class SystemMenu extends Model
                     }
 
                     // 过滤没访问权限的节点
-                    if (!RoleModel::checkAuth($v['id'])) {
-                        unset($data[$k]);
-                        continue;
+                    if($v['uid']==0){
+                        if (!RoleModel::checkAuth($v['id'])) {
+                            unset($data[$k]);
+                            continue;
+                        }
+                    }else{
+                        if (!RoleModel::checkAuth($v['origin_id'])) {
+                            unset($data[$k]);
+                            continue;
+                        }
                     }
+                    
 
                     // 多语言支持
                     if (config('sys.multi_language') == 1) {

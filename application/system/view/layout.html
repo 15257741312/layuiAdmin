@@ -28,7 +28,7 @@
                         {else /}
                             <li>
                         {/if}
-                            <a href="javascript:;" class="{if (isset($vo['class']))}{$vo['class']}{/if}" id="{if (isset($vo['id']))}{$vo['id']}{/if}">{$vo['title']|raw}</a>
+                            <a href="javascript:;" class="{if (isset($vo['class']))}{$vo['class']}{/if}" id="{if (isset($vo['id']))}{$vo['id']}{/if}">{if $vo['title']=='快捷菜单'}首页{else /}{$vo['title']|raw}{/if}</a>
                         </li>
                     {/volist}
                 </ul>

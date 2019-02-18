@@ -9,25 +9,25 @@
 // | Author: 橘子俊 <364666827@qq.com>，开发者QQ群：50304283
 // +----------------------------------------------------------------------
 
-namespace app\system\model;
+namespace app\team\validate;
 
-use think\Model;
-use app\team\model\User as UserModel;
+use think\Validate;
+
 /**
- * 后台日志模型
- * @package app\system\model
+ * 用户验证器
+ * @package app\team\validate
  */
-class SystemLog extends Model
+class Dept extends Validate
 {
-    // 定义时间戳字段名
-    protected $createTime = 'ctime';
-    protected $updateTime = 'mtime';
+    //定义验证规则
+    protected $rule = [
+        'name|部门名称'       => 'require|unique:_dept',
+        'order|排序'          =>'number|>=:0'
+    ];
 
-    // 自动写入时间戳
-    protected $autoWriteTimestamp = true;
-    
-    public function user()
-    {
-        return $this->hasOne('app\team\model\User', 'id', 'uid');
-    }
+    //定义验证提示
+    protected $message = [
+        'name.require' => '请输入部门名称',
+        'order.number' => '排序必须是正数'
+    ];
 }

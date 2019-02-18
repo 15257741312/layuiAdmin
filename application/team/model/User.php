@@ -184,7 +184,7 @@ class User extends Model
             $login['role_id'] = $user->role_id;
             $login['role_name'] = $role['name'];
             $login['nick'] = $user->nick;
-            cookie('hisi_iframe', (int)$user->iframe);
+            cookie('hisi_iframe', 1);
             // 主题设置
             self::setTheme(isset($user->theme) ? $user->theme : 0);
             self::getThemes(true);

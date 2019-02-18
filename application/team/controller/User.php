@@ -15,6 +15,7 @@ use app\system\controller\Admin;
 use app\team\model\User as UserModel;
 use app\team\model\Role as RoleModel;
 use app\system\model\SystemMenu as MenuModel;
+use think\Db;
 
 /**
  * 后台用户、角色控制器
@@ -58,7 +59,7 @@ class User extends Admin
             $keyword    = $this->request->param('keyword/s');
             $where[]    = ['id', 'neq', 1];
             if ($keyword) {
-                $where[] = ['username', 'like', "%{$keyword}%"];
+                $where[] = ['nick', 'like', "%{$keyword}%"];
             }
 
             $data['data'] = UserModel::with('role')->where($where)->page($page)->limit($limit)->select();
@@ -80,17 +81,17 @@ class User extends Admin
      */
     public function iframe()
     {
-        $val = UserModel::where('id', ADMIN_ID)->value('iframe');
-        if ($val == 1) {
-            $val = 0;
-        } else {
-            $val = 1;
-        }
-        if (!UserModel::where('id', ADMIN_ID)->setField('iframe', $val)) {
-            return $this->error('切换失败');
-        }
-        cookie('hisi_iframe', $val);
-        return $this->success('请稍等，页面切换中...', url('system/index/index'));
+        // $val = UserModel::where('id', ADMIN_ID)->value('iframe');
+        // if ($val == 1) {
+        //     $val = 0;
+        // } else {
+        //     $val = 1;
+        // }
+        // if (!UserModel::where('id', ADMIN_ID)->setField('iframe', $val)) {
+        //     return $this->error('切换失败');
+        // }
+        cookie('hisi_iframe', 1);
+        //return $this->success('请稍等，页面切换中...', url('system/index/index'));
     }
 
     /**
@@ -386,5 +387,21 @@ class User extends Admin
             return $this->success('删除成功');
         }
         return $this->error($model->getError());
+    }
+
+    /*
+    *获取用户表的数据，作为select选项输出
+    *@author 李杰 <15257741312@163.com>
+    */
+    public function get_user_options($id=''){
+
+        $res=Db::name('user')->where('id','<>',1)->field('id,nick')->select();
+        $str='<option value=" ">请选择</option>';
+        foreach ($res as $key => $value) {
+            $select='';
+            if($id==$value['id']) $select='selected="selected"';
+            $str.='<option '.$select.' value="'.$value['id'].'">'.$value['nick'].'</option>'; 
+        }
+        return $str;
     }
 }

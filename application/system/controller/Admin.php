@@ -46,19 +46,17 @@ class Admin extends Common
         // 判断登陆
         $login = $model->isLogin();
         if (!$login['uid']) {
-            return $this->error('请登陆之后在操作', ROOT_DIR.config('sys.admin_path'));
+            return $this->error('请登陆之后再操作', ROOT_DIR.config('sys.admin_path'));
         }
-        
         if (!defined('ADMIN_ID')) {
             define('ADMIN_ID', $login['uid']);
             define('ADMIN_ROLE', $login['role_id']);
-        
+
             $curMenu = MenuModel::getInfo();
             if ($curMenu) {
-
                 if (!RoleModel::checkAuth($curMenu['id']) && 
-                    $curMenu['url'] != 'system/index/index') {
-                    return $this->error('['.$curMenu['title'].'] 访问权限不足');
+                    $curMenu['url'] != ('system/index/index' || 'system/menu/quick') ) {
+                    return $this->error('['.$curMenu['title'].'] 访问权限不足'.$curMenu['id'].$curMenu['url']);
                 }
                 
             } else if (config('sys.admin_whitelist_verify')) {
@@ -463,7 +461,6 @@ class Admin extends Common
      */
     public function del()
     {
-
         $id         = $this->request->param('id/a');
         $hisiModel  = $this->request->param('hisiModel');
         $hisiTable  = $this->request->param('hisiTable');

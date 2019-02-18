@@ -228,6 +228,7 @@ class Menu extends Admin
      */
     public function quick()
     {
+
         $id = $this->request->param('id/d');
         if (!$id) {
             return $this->error('参数传递错误');
@@ -249,6 +250,7 @@ class Menu extends Admin
         $row['pid']     = $map['pid'] = 4;
 
         if (MenuModel::where($map)->find()) {
+
             return $this->error('您已添加过此快捷菜单');
         }
 
@@ -256,6 +258,7 @@ class Menu extends Admin
         $row['debug']   = 0;
         $row['system']  = 0;
         $row['ctime']   = time();
+        $row['origin_id']  = $id;   //为快捷菜单添加菜单源id
 
         $model = new MenuModel();
 

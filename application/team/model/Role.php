@@ -138,6 +138,7 @@ class Role extends Model
         if ($login['uid'] == '1' || $login['role_id'] == '1') {
             return true;
         }
+
         // 获取当前角色的权限明细
         $role_auth = (array)session('role_auth_'.$login['role_id']);
         if (!$role_auth) {

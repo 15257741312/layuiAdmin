@@ -1,0 +1,71 @@
+<form class="layui-form" action="{:url()}" method="post" id="editForm">
+<div class="layui-tab-item layui-show">
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属部门</label>
+        <div class="layui-input-inline">
+            <select name="parent" class="field-parent" type="select">
+                {$deptOptions|raw}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门名称</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input field-name" name="name" lay-verify="required" autocomplete="off" placeholder="请输入部门名称">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择管理员</label>
+        <div class="layui-input-inline">
+            <select lay-search=" " name="manager" class="field-manager" type="select">
+                {$userOptions|raw}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input field-order" value="100" name="order" lay-verify="required" autocomplete="off" placeholder="请输入排序">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">启用状态</label>
+        <div class="layui-input-inline">
+            <input type="radio" class="field-status" name="status" value="1" title="启用" checked>
+            <input type="radio" class="field-status" name="status" value="0" title="禁用">
+        </div>
+    </div>
+</div>
+
+{if (request()->action() == 'add_dept')}
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:token()}
+            <input type="hidden" class="field-id" name="id">
+        </div>
+    </div>
+    <div class="pop-bottom-bar">
+        <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="formSubmit" hisi-data="{pop: true, refresh: true}">提交保存</button>
+        <a href="javascript:parent.layui.layer.closeAll();" class="layui-btn layui-btn-primary ml10">取消</a>
+    </div>
+{else /}
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:token()}
+            <input type="hidden" class="field-id" name="id">
+            <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="formSubmit">提交</button>
+            <a href="{:url('dept_info')}" class="layui-btn layui-btn-primary ml10"><i class="aicon ai-fanhui"></i>返回</a>
+        </div>
+    </div>
+{/if}
+</form>
+{include file="system@block/layui" /}
+<script>
+var formData={:json_encode($formData)};
+layui.use(['form', 'func'], function() {
+    var $ = layui.jquery, form = layui.form;
+    layui.func.assign(formData);
+    /* 有BUG 待完善*/
+
+});
+</script>

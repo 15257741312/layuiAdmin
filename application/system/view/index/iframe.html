@@ -40,21 +40,38 @@ $ca = strtolower(request()->controller().'/'.request()->action());
     </div>
 </div>
 {include file="system@block/layui" /}
+<script type="text/javascript" src="__STATIC__/js/jquery.2.1.4.min.js"></script>
+<script type="text/javascript" src="__STATIC__/js/jquery.cookie.js"></script>
 <script type="text/javascript">
     layui.use(['jquery', 'element', 'layer'], function() {
+        //实现刷新页面后，已打开的页面保存下来
         var $ = layui.jquery, element = layui.element, layer = layui.layer;
         $('.layui-tab-content').height($(window).height() - 145);
+        if($.cookie('url_store')){
+            var url_arr=JSON.parse($.cookie('url_store'))
+            for(var i=0;i<url_arr.length;i++){
+                element.tabAdd('hisiTab',{
+                    title: '<i class="layui-icon j-ajax" data-href="{:url('system/menu/quick')}?id='+url_arr[i][2]+'">&#xe600;&nbsp;</i>'+url_arr[i][0],
+                    content: '<iframe width="100%" height="100%" lay-id="'+url_arr[i][2]+'" frameborder="0" src="'+url_arr[i][1]+'" scrolling="yes" class="x-iframe"></iframe>',
+                    id: url_arr[i][2],
+                })
+            }
+        }
+
         var tab = {
-                add: function(title, url, id) {
-                    element.tabAdd('hisiTab', {
-                        title: '<i class="layui-icon j-ajax" data-href="{:url('system/menu/quick')}?id='+id+'">&#xe600;&nbsp;</i>'+title,
-                        content: '<iframe width="100%" height="100%" lay-id="'+id+'" frameborder="0" src="'+url+'" scrolling="yes" class="x-iframe"></iframe>',
-                        id: id
-                    });
-                }, change: function(id) {
-                  element.tabChange('hisiTab', id);
-                }
-            };
+            add: function(title, url, id) {
+                if(title=='快捷菜单') title='首页';
+                element.tabAdd('hisiTab', {
+                    title: '<i class="layui-icon j-ajax" data-href="{:url('system/menu/quick')}?id='+id+'">&#xe600;&nbsp;</i>'+title,
+                    content: '<iframe width="100%" height="100%" lay-id="'+id+'" frameborder="0" src="'+url+'" scrolling="yes" class="x-iframe"></iframe>',
+                    id: id
+                });
+            }, change: function(id) {
+              element.tabChange('hisiTab', id);
+            }
+        };
+        
+        var arr_temp=[];
         $('.admin-nav-item').click(function(event) {
             var that = $(this);
             if ($('iframe[src="'+that.attr('href')+'"]')[0]) {
@@ -66,7 +83,50 @@ $ca = strtolower(request()->controller().'/'.request()->action());
             if (!that.hasClass('top-nav-item')) {
                 that.css({color:'#fff'});
             }
+
             tab.add(that.text(), that.attr('href'), that.attr('data-id'));
+
+            var store_data=[that.text(), that.attr('href'), that.attr('data-id')];
+            var flag=true;
+            for(var i=0;i<arr_temp.length;i++){
+                if(store_data.toString()==arr_temp[i].toString()){
+                    flag=false;
+                }
+            }
+            if(flag==true){
+                arr_temp.push(store_data);
+            }
+
+            var num=[];
+            if($.cookie('url_store')){
+                var cookie_arr=JSON.parse($.cookie('url_store'));
+                
+                for(var i=0;i<cookie_arr.length;i++){
+                    for(var j=0;j<arr_temp.length;j++){
+                        if(cookie_arr[i].toString()==arr_temp[j].toString()){
+                            num.push(arr_temp[j][2]);    
+                        }
+                    }
+                }
+
+                for(var i=0;i<arr_temp.length;i++){
+                    if(num){
+                        var flag2=true;
+                        for(var j=0;j<num.length;j++){
+                            if(num[j]==arr_temp[i][2]){
+                                flag2=false;
+                            }
+                        }
+                        if(flag2==true) cookie_arr.push(arr_temp[i]);
+                    }else{
+                        cookie_arr.push(arr_temp[i]);
+                    }
+                }
+                $.cookie('url_store',JSON.stringify(cookie_arr));
+            }else{
+                $.cookie('url_store',JSON.stringify(arr_temp));
+            }
+            
             tab.change(that.attr('data-id'));
             event.stopPropagation();
             return false;
@@ -74,6 +134,18 @@ $ca = strtolower(request()->controller().'/'.request()->action());
 
         $(document).on('click', '.layui-tab-close', function() {
             $('.layui-nav-child a[data-id="'+$(this).parent('li').attr('lay-id')+'"]').css({color:'rgba(255,255,255,.7)'});
+            var del_id=$(this).parent('li').attr('lay-id');
+            if($.cookie('url_store')){
+                var url_arr=$.parseJSON($.cookie('url_store'));
+                var del_temp_arr=[];
+                for(var i=0;i<url_arr.length;i++){
+                    if(del_id!=url_arr[i][2]) del_temp_arr.push(url_arr[i]);
+                }
+
+                url_str=JSON.stringify(del_temp_arr);
+
+                $.cookie('url_store',url_str);
+            }
         });
     });
 </script>

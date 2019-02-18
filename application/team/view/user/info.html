@@ -1,3 +1,4 @@
+
 <form class="layui-form" action="{:url()}" method="post" id="editForm">
 <div class="page-form">
     <div class="layui-form-item">
@@ -42,7 +43,7 @@
             {:token()}
             <input type="hidden" class="field-id" name="id">
             <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="formSubmit">提交</button>
-            <a href="{:url('index')}" class="layui-btn layui-btn-primary ml10"><i class="aicon ai-fanhui"></i>返回</a>
+            <a id="back_a" class="layui-btn layui-tab-close layui-btn-primary ml10"><i class="aicon ai-fanhui"></i>返回</a>
         </div>
     </div>
 </div>
@@ -52,4 +53,8 @@
 layui.use(['func'], function() {
     layui.func.assign({:json_encode($formData)});
 });
+
+document.getElementById('back_a').addEventListener('click',function(){
+    window.location.reload();
+})
 </script>

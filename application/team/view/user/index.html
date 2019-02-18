@@ -1,3 +1,10 @@
+<div class="search">
+    <label class="layui-form-label">员工名称</label>
+    <div class="layui-inline">
+        <input type="" class="layui-input" autocomplete="on" name="keyword">
+    </div>
+    <button class="layui-btn" data-type='reload' id="search_btn">搜索</button>
+</div>
 <table id="dataTable"></table>
 
 {include file="system@block/layui" /}
@@ -14,18 +21,18 @@
 <script type="text/html" id="toolbar">
     <div class="layui-btn-group fl">
         <a href="{:url('addUser')}" class="layui-btn layui-btn-primary layui-btn-sm layui-icon layui-icon-add-circle-fine j-iframe-pop" hisi-data="{width: '470px', height: '400px'}" title="添加管理员">&nbsp;添加</a>
-        <a data-href="{:url('status?table=admin_user&val=1')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns layui-icon layui-icon-play" data-table="dataTable">&nbsp;启用</a>
-        <a data-href="{:url('status?table=admin_user&val=0')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns layui-icon layui-icon-pause" data-table="dataTable">&nbsp;禁用</a>
-        <a data-href="{:url('delUser')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns confirm layui-icon layui-icon-close red">&nbsp;删除</a>
+        <a id='open' data-href="{:url('status?table=admin_user&val=1')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns layui-icon layui-icon-play" data-table="dataTable">&nbsp;启用</a>
+        <a data-href="{:url('status?table=admin_user&val=0')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns layui-icon layui-icon-pause forbiden" data-table="dataTable">&nbsp;禁用</a>
+        <a data-href="{:url('delUser')}" class="layui-btn layui-btn-primary layui-btn-sm j-page-btns confirm layui-icon layui-icon-close red delete">&nbsp;删除</a>
     </div>
 </script>
 
 <script type="text/javascript">
     layui.use(['table'], function() {
         var table = layui.table;
-        table.render({
+        var tableIns = table.render({
             elem: '#dataTable'
-            ,url: '{:url()}' //数据接口
+            ,url: '{:url("user/index")}' //数据接口
             ,page: true //开启分页
             ,skin: 'row'
             ,even: true
@@ -33,6 +40,7 @@
             ,text: {
                 none : '暂无相关数据'
             }
+            
             ,toolbar: '#toolbar'
             ,defaultToolbar: ['filter']
             ,cols: [[ //表头
@@ -51,5 +59,23 @@
                 ,{title: '操作', templet: '#buttonTpl'}
             ]]
         });
+
+        $('#search_btn').click(function(){
+            var keyword=$("input[name='keyword']").val();
+            tableIns.reload({
+                url: '{:url("user/index")}'
+                ,where: {
+                    'keyword' : keyword,
+                }
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        })
+
+        $('body').on('click','#open',function(){
+            console.log(table);
+        })
+
     });
 </script>
